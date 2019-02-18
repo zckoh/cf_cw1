@@ -1,0 +1,1 @@
+# Historical data for 30 stocks in FTSE 100 from 02/13/16 - 02/13/19 (3 Years)

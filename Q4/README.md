@@ -1,0 +1,1 @@
+# Historical data for FTSE 100 index from 02/13/16 - 02/13/19 (3 Years)

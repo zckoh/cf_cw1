@@ -8,6 +8,7 @@ mean_returns = transpose(table2array(mean_returns(:,2:4)));
 cov_matrix = readtable("results/cov_1st_half.csv");
 cov_matrix = transpose(table2array(cov_matrix(:,2:4)));
 
+% mean-variance optimisation
 % cvx_begin
 %     variable optimal_weights(n);
 %     maximise ( (optimal_weights' * mean_returns) - (risk_tol/2) * (optimal_weights' * cov_matrix * optimal_weights));
@@ -16,11 +17,13 @@ cov_matrix = transpose(table2array(cov_matrix(:,2:4)));
 %     optimal_weights >= 0;
 % cvx_end
 
+% minimum-variance portfolio
 cvx_begin quiet
     variable optimal_weights(n);
     minimise ((optimal_weights' * cov_matrix * optimal_weights));
     subject to
     c * optimal_weights == 1;
+%     optimal_weights >= 0;
 cvx_end
 
 save("results/optimal_weights_workspace.mat")

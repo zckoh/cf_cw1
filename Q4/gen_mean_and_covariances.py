@@ -15,12 +15,13 @@ Brief   : Compute the mean and covariances of MRW, HRGV, GLEN
 import numpy as np
 import pandas as pd
 import math
+%matplotlib inline
 pd.set_option('display.max_columns', 10)
 
 # Load in the historical data for the 3 stocks (MRW,HRGV,GLEN)
-MRW = pd.read_csv('30stocks/MRW Historical Data.csv', delimiter = ',',thousands = ',')
-HRGV = pd.read_csv('30stocks/HRGV Historical Data.csv', delimiter = ',',thousands = ',')
-GLEN = pd.read_csv('30stocks/GLEN Historical Data.csv', delimiter = ',',thousands = ',')
+MRW = pd.read_csv('./30stocks/MRW Historical Data.csv', delimiter = ',',thousands = ',')
+HRGV = pd.read_csv('./30stocks/HRGV Historical Data.csv', delimiter = ',',thousands = ',')
+GLEN = pd.read_csv('./30stocks/GLEN Historical Data.csv', delimiter = ',',thousands = ',')
 
 # Reverse the data frame so that first row is the earliest data.
 MRW = MRW.iloc[::-1]
@@ -36,12 +37,6 @@ GLEN = GLEN.reset_index(drop=True)
 MRW_1st_half = MRW.loc[:math.ceil(len(MRW)/2),'Date':'Price']
 HRGV_1st_half = HRGV.loc[:math.ceil(len(HRGV)/2),'Date':'Price']
 GLEN_1st_half = GLEN.loc[:math.ceil(len(GLEN)/2),'Date':'Price']
-
-# Compute the mean for each stock using the half dataset
-MRW_mean = MRW_1st_half.loc[:,'Price'].mean(axis=0)
-HRGV_mean = HRGV_1st_half.loc[:,'Price'].mean(axis=0)
-GLEN_mean = GLEN_1st_half.loc[:,'Price'].mean(axis=0)
-mean = pd.DataFrame([(MRW_mean,HRGV_mean,GLEN_mean)],columns=['MRW_mean', 'HRGV_mean','GLEN_mean'])
 
 # Combine the historical data into 1 Nx3 matrix
 frame = [pd.to_datetime(MRW_1st_half['Date']), MRW_1st_half.loc[:,'Price'],
@@ -76,8 +71,8 @@ print("\nCovariance Matrix of MRW, HRGV, GLEN")
 print(cov_matrix)
 
 # Save the results
-mean.to_pickle("results/mean_1st_half.pkl")
-cov_matrix.to_pickle("results/cov_1st_half.pkl")
+mean.to_pickle("./results/mean_1st_half.pkl")
+cov_matrix.to_pickle("./results/cov_1st_half.pkl")
 
-mean.to_csv("results/mean_1st_half.csv")
-cov_matrix.to_csv("results/cov_1st_half.csv")
+mean.to_csv("./results/mean_1st_half.csv")
+cov_matrix.to_csv("./results/cov_1st_half.csv")

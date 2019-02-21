@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 
 # Read the mean and covariance matrix from file
-mean_returns = pd.read_pickle("results/mean_1st_half.pkl")
-cov_matrix  = pd.read_pickle("results/cov_1st_half.pkl")
+mean_returns = pd.read_pickle("./results/mean_1st_half.pkl")
+cov_matrix  = pd.read_pickle("./results/cov_1st_half.pkl")
 
 # how much to normalize the metric
 norm_val = 1

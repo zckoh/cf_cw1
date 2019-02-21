@@ -20,14 +20,14 @@ import scipy.io
 from scipy.optimize import minimize
 from numpy.linalg import inv
 
-from functions import * 
-
+from functions import *
+%matplotlib inline
 pd.set_option('display.max_columns', 10)
 
 # Load in the historical data for the 3 stocks (MRW,HRGV,GLEN)
-MRW = pd.read_csv('30stocks/MRW Historical Data.csv', delimiter = ',',thousands = ',')
-HRGV = pd.read_csv('30stocks/HRGV Historical Data.csv', delimiter = ',',thousands = ',')
-GLEN = pd.read_csv('30stocks/GLEN Historical Data.csv', delimiter = ',',thousands = ',')
+MRW = pd.read_csv('./30stocks/MRW Historical Data.csv', delimiter = ',',thousands = ',')
+HRGV = pd.read_csv('./30stocks/HRGV Historical Data.csv', delimiter = ',',thousands = ',')
+GLEN = pd.read_csv('./30stocks/GLEN Historical Data.csv', delimiter = ',',thousands = ',')
 
 # Reverse the data frame so that first row is the earliest data.
 MRW = MRW.iloc[::-1]
@@ -49,8 +49,8 @@ GLEN_2nd_half = GLEN.loc[math.floor(len(GLEN)/2):,'Date':'Price']
 # Design an efficient portfolio based from the mean and covariances calculated
 # =============================================================================
 # Read the mean and covariance matrix from file
-mean_returns = pd.read_pickle("results/mean_1st_half.pkl")
-cov_matrix  = pd.read_pickle("results/cov_1st_half.pkl")
+mean_returns = pd.read_pickle("./results/mean_1st_half.pkl")
+cov_matrix  = pd.read_pickle("./results/cov_1st_half.pkl")
 
 
 # =============================================================================
@@ -68,7 +68,7 @@ print(opt_portf)
 # We compute the optimization problem to obtain the optimal weights
 # Load the optimal values computed from CVX in matlab
 # =============================================================================
-mat = scipy.io.loadmat('results/optimal_weights_workspace.mat', squeeze_me=True)
+mat = scipy.io.loadmat('./results/optimal_weights_workspace.mat', squeeze_me=True)
 optimal_weights = mat['optimal_weights']
 
 
@@ -80,7 +80,7 @@ portf_size = 10000
 # Naive weights
 naive_weights = np.array([1/3, 1/3, 1/3])
 
-# Add normalised return for each stock assuming we start to invest on the 
+# Add normalised return for each stock assuming we start to invest on the
 # first day of the second half
 for stock_df in (MRW_2nd_half, HRGV_2nd_half, GLEN_2nd_half):
     stock_df['Norm return'] = stock_df['Price'] / stock_df.iloc[0]['Price']
@@ -132,7 +132,7 @@ MRW_new_portf = MRW.loc[math.floor(len(MRW)/2):,'Date':'Price']
 HRGV_new_portf = HRGV.loc[math.floor(len(HRGV)/2):,'Date':'Price']
 GLEN_new_portf = GLEN.loc[math.floor(len(GLEN)/2):,'Date':'Price']
 
-# Add normalised return for each stock assuming we start to invest on the 
+# Add normalised return for each stock assuming we start to invest on the
 # first day of the second half
 for stock_df in (MRW_new_portf, HRGV_new_portf, GLEN_new_portf):
     stock_df['Norm return'] = stock_df['Price'] / stock_df.iloc[0]['Price']
@@ -231,13 +231,13 @@ min_sr_std = std_arr[sharpe_arr.argmin()]
 # init_guess = np.array([portf_weights])
 # bounds = ((0,1),(0,1),(0,1))
 # constraints = ({'type':'eq','fun':check_sum})
-# 
+#
 # opt_result = minimize(neg_sharpe,init_guess,method='SLSQP', bounds=bounds,
 #                       constraints = constraints)
 # print("optimizing for maximum sharpe ratio")
 # print(opt_result)
 # opt_x = portfolio_annualised_performance(opt_result.x)
-# 
+#
 # =============================================================================
 
 # =============================================================================
@@ -246,7 +246,7 @@ min_sr_std = std_arr[sharpe_arr.argmin()]
 # bounds = ((0,1),(0,1),(0,1))
 # constraints = ({'type':'eq','fun':check_sum},
 #                {'type':'eq','fun': lambda w: portfolio_annualised_performance(w)[0] - 0.00175})
-# 
+#
 # opt_result = minimize(minimize_risk,init_guess,method='SLSQP', bounds=bounds,
 #                       constraints = constraints)
 # print("\nOptimisation results by minizing the risk s.t. return = 0.00175")
@@ -257,7 +257,7 @@ min_sr_std = std_arr[sharpe_arr.argmin()]
 optimal_values = portfolio_annualised_performance(optimal_weights)
 naive_values = portfolio_annualised_performance(naive_weights)
 
-# Get the line for the efficient frontier with the minimum risk for all possible returns 
+# Get the line for the efficient frontier with the minimum risk for all possible returns
 frontier_y = np.linspace(min_sr_ret,max_sr_ret,300)
 frontier_x = []
 frontier_weights = []
@@ -296,10 +296,12 @@ plt.legend((max_sharpe,min_sharpe,naive_plt,opt_plot),
             'Min Sharpe ratio',
             'Naive portfolio',
             'Minimum-variance portfolio'))
-ax = plt.gca()  # get the current axes
-ax.relim()      # make sure all the data fits
-ax.autoscale()  # auto-
-
+# =============================================================================
+# ax = plt.gca()  # get the current axes
+# ax.relim()      # make sure all the data fits
+# ax.autoscale()  # auto-
+#
+# =============================================================================
 plt.savefig('./plots/effFrontier3stocks.png',dpi=300,
             bbox_inches='tight', pad_inches=0)
 plt.show()
@@ -315,5 +317,5 @@ plt.show()
 # FTSE.set_index('Date', inplace=True)
 # FTSE = FTSE.iloc[::-1]
 # pd.to_numeric(FTSE['Price']).plot(figsize=(10,8))
-# 
+#
 # =============================================================================

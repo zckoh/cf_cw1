@@ -1,6 +1,11 @@
+num_of_samples = 760;
+
 % Load in the historical data of FTSE
-FTSE = importfile('FTSE 100 Historical Data.csv', 2, 760);
+FTSE = importfile('FTSE 100 Historical Data.csv', 2, num_of_samples);
 FTSE = flipud(FTSE);
+
+% Take only half of the historical data to train.
+FTSE = FTSE(1:380,:);
 
 % Load in the historical data of the 30 stocks
 projectdir = '30stocks';
@@ -11,9 +16,10 @@ stocklist = FTSE(:,1);
 
 numfiles = length(dinfo);
 for j = 1 : numfiles
-  stock = importfile(strcat(strcat(projectdir,'/'), dinfo(j).name),2,760);
+  stock = importfile(strcat(strcat(projectdir,'/'), dinfo(j).name),2,num_of_samples);
   stock = flipud(stock);
   stock.Properties.VariableNames(2) = {erase(dinfo(j).name,'Historical Data.csv')};
+  stock = stock(1:380,:);
   stocklist = join(stocklist,stock);
 end
 
@@ -28,13 +34,10 @@ for j = 2 : numfiles+1
 end
 
 % Find the average relative difference against the index
-
-% stock_diff = stocklist(:,1);
 avg_diff_list = [];
 avg_diff_list_names = [];
 
 for j = 2: numfiles+1
-%     stock_diff.(string(stock_norm.Properties.VariableNames(j))) = abs(stock_norm{:,j} - FTSE_norm{:,2});
     avg_diff = relative_avg_diff(stock_norm{:,j},FTSE_norm{:,2});
 
     avg_diff_list_names = [avg_diff_list_names,string(stock_norm.Properties.VariableNames(j))];
@@ -47,22 +50,24 @@ end
 % For next iteration, use linear regression with bound constraints to find
 % the next best.
 total_models = numfiles;
-best_model = stock_norm(:,1+firstindex);
+greedy_model = stock_norm(:,1+firstindex);
 
 % initialise the norms which have all the stocks together and remove the
 % first one from it.
 grdy_srch_norms = stock_norm;
-grdy_srch_norms = removevars(grdy_srch_norms,best_model.Properties.VariableNames);
+grdy_srch_norms = removevars(grdy_srch_norms,greedy_model.Properties.VariableNames);
+
+No_of_stocks = 6;
 
 % Initialise the list for storing
-best_weights_list = zeros(5,5);
-best_stocks_list = string(best_weights_list);
+greedy_weights_list = zeros(No_of_stocks,No_of_stocks);
+greedy_stocks_list = string(greedy_weights_list);
 
 % add the values for the 1st model
-best_weights_list(1,1) = 1.0;
-best_stocks_list(1,1) = string(best_model.Properties.VariableNames);
+greedy_weights_list(1,1) = 1.0;
+greedy_stocks_list(1,1) = string(greedy_model.Properties.VariableNames);
 
-for j = 2:5
+for j = 2:No_of_stocks
     % Reduce 1 model for every iteration
     total_models = total_models - 1;
     
@@ -75,7 +80,7 @@ for j = 2:5
     for n = 1:total_models
         % Take J stocks as features X
         % first take the ones in the best_model
-        new_model = best_model;
+        new_model = greedy_model;
         % then add a new feature with the best model
         new_model.(string(grdy_srch_norms.Properties.VariableNames(1+n))) = grdy_srch_norms{:,1+n};
         
@@ -106,22 +111,22 @@ for j = 2:5
     [value, bestindex] = min(SSE_list(:));
     
     % Temporarily save the weights with the smallest SSE
-    best_weights = [optimal_weights_list(bestindex,:),zeros(1,5-j)];
+    greedy_weights = [optimal_weights_list(bestindex,:),zeros(1,No_of_stocks-j)];
     
     % Save that model from stock_norm to the best model
-    best_model = stock_norm(:,{stockname_list{bestindex,:}});
+    greedy_model = stock_norm(:,{stockname_list{bestindex,:}});
     
     % Remove the stocks that are in best_model from grdy_srch_norms
     grdy_srch_norms = removevars(grdy_srch_norms,{stockname_list{bestindex,j}});
     
     % save the weights and stock names to a list for later saving
-    best_weights_list(j,:) = best_weights;
-    stockname = [string(stockname_list(bestindex,:)),string(zeros(1,5-j))];
-    best_stocks_list(j,:) = stockname;
+    greedy_weights_list(j,:) = greedy_weights;
+    greedy_stocknames = [string(stockname_list(bestindex,:)),string(zeros(1,No_of_stocks-j))];
+    greedy_stocks_list(j,:) = greedy_stocknames;
     
     % Print out to check
     disp(['Iteration ',num2str(j),' Smallest SSE = ',num2str(value)]);
-    disp(['with weights = ',num2str(best_weights),'  for stocks:',stockname_list(bestindex,:)]);
+    disp(['with weights = ',num2str(greedy_weights),'  for stocks:',stockname_list(bestindex,:)]);
 end
 
-save("results/greedy_search_results.mat")
+save("results/greedy_search_results_half.mat")

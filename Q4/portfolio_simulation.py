@@ -21,7 +21,7 @@ from scipy.optimize import minimize
 from numpy.linalg import inv
 
 from functions import *
-%matplotlib inline
+# %matplotlib inline
 pd.set_option('display.max_columns', 10)
 
 # Load in the historical data for the 3 stocks (MRW,HRGV,GLEN)
@@ -262,11 +262,13 @@ frontier_y = np.linspace(min_sr_ret,max_sr_ret,300)
 frontier_x = []
 frontier_weights = []
 
+bounds = ((0,1),(0,1),(0,1))
+
 for possible_return in frontier_y:
     constraints = ({'type':'eq', 'fun':check_sum},
             {'type':'eq', 'fun': lambda w: portfolio_annualised_performance(w)[0] - possible_return})
 
-    result = minimize(minimize_risk,init_guess,method='SLSQP', bounds=bounds, constraints=constraints)
+    result = minimize(minimize_risk,np.array([1/3, 1/3, 1/3]),method='SLSQP', bounds=bounds, constraints=constraints)
     frontier_weights.append(result.x)
     frontier_x.append(result['fun'])
 frontier_weights = np.array(frontier_weights)
@@ -309,13 +311,18 @@ plt.show()
 
 
 # =============================================================================
-# # =============================================================================
-# # Plot FTSE overall index to see overall trend
-# # =============================================================================
-# FTSE = pd.read_csv('FTSE 100 Historical Data.csv', delimiter = ',',thousands=',')
-# FTSE['Date'] = pd.to_datetime(FTSE['Date'])
-# FTSE.set_index('Date', inplace=True)
-# FTSE = FTSE.iloc[::-1]
-# pd.to_numeric(FTSE['Price']).plot(figsize=(10,8))
-#
+# Plot FTSE overall index to see overall trend
 # =============================================================================
+FTSE = pd.read_csv('FTSE 100 Historical Data.csv', delimiter = ',',thousands=',')
+FTSE['Date'] = pd.to_datetime(FTSE['Date'])
+FTSE.set_index('Date', inplace=True)
+FTSE = FTSE.iloc[::-1]
+pd.to_numeric(FTSE['Price']).plot(figsize=(10,8))
+
+
+# =============================================================================
+# Find the change against first day
+# =============================================================================
+FTSE['Norm change'] = FTSE['Price'] / FTSE.iloc[0]['Price']
+
+FTSE['Norm change'].plot(figsize=(10,8))

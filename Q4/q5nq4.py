@@ -3,7 +3,7 @@
 File    :
 Author  : zckoh
 Date    : Thu Feb 21 17:15:18 2019
-Brief   : 
+Brief   :
 """
 
 import numpy as np
@@ -95,7 +95,7 @@ naive_portf_val.set_index('Date', inplace=True)
 # naive_portf_val['Total Pos'].plot(figsize=(10,8))
 # plt.savefig('./plots/naivePortfTotalPos.png',dpi=300,
 #             bbox_inches='tight', pad_inches=0)
-# 
+#
 # print("Graph for individual position for each stock in portfolio")
 # naive_portf_val.drop(['Total Pos','Daily Return'], axis=1).plot(figsize=(10,8))
 # plt.savefig('./plots/naivePortfIdvPos.png',dpi=300,
@@ -227,65 +227,65 @@ plt.show()
 # Plot the EV space
 # =============================================================================
 # =============================================================================
-# 
+#
 # # Parameters
 # norm_val = 1
 # portf_weights = np.array([1/3, 1/3, 1/3])
-# 
-# 
+#
+#
 # # First we plot the efficient frontier to get a better idea of the chosen securities
 # num_ports = 1000
 # all_weights = np.zeros((num_ports, 3))
 # ret_arr = np.zeros(num_ports)
 # std_arr = np.zeros(num_ports)
 # sharpe_arr = np.zeros(num_ports)
-# 
+#
 # for x in range(num_ports):
 #     # Generate random weights
 #     weights = np.array(np.random.random(3))
 #     weights = weights/np.sum(weights)
 #     all_weights[x,:] = weights
-# 
+#
 #     # Calculate portfolio’s overall expected returns
 #     ret_arr[x] = np.sum( (mean_returns.values * weights * norm_val))
-# 
+#
 #     # Calculate portfolio’s overall standard deviation
 #     std_arr[x] = np.sqrt(np.dot(weights.T, np.dot(cov_matrix.values, weights))) * np.sqrt(norm_val)
-# 
+#
 #     # Find Sharpe Ratio
 #     sharpe_arr[x] = ret_arr[x]/std_arr[x]
-# 
+#
 # # Find the portfolio with best sharpe ratio and its weights
 # print('Max Sharpe ratio in the array: ',sharpe_arr.max())
 # print('The weights for maximum Sharpe ratio: ',all_weights[sharpe_arr.argmax(),:])
-# 
+#
 # # Find the return and std for the portfolio with maximum sharpe ratio
 # max_sr_ret = ret_arr[sharpe_arr.argmax()]
 # max_sr_std = std_arr[sharpe_arr.argmax()]
-# 
+#
 # # Find the return and std for the portfolio with minimum sharpe ratio
 # min_sr_ret = ret_arr[sharpe_arr.argmin()]
 # min_sr_std = std_arr[sharpe_arr.argmin()]
-# 
-# 
-# 
+#
+#
+#
 # optimal_values = portfolio_annualised_performance(optimal_weights)
 # naive_values = portfolio_annualised_performance(naive_weights)
-# 
+#
 # # Get the line for the efficient frontier with the minimum risk for all possible returns
 # frontier_y = np.linspace(min_sr_ret,max_sr_ret,300)
 # frontier_x = []
 # frontier_weights = []
-# 
+#
 # for possible_return in frontier_y:
 #     constraints = ({'type':'eq', 'fun':check_sum},
 #             {'type':'eq', 'fun': lambda w: portfolio_annualised_performance(w)[0] - possible_return})
-# 
+#
 #     result = minimize(minimize_risk,init_guess,method='SLSQP', bounds=bounds, constraints=constraints)
 #     frontier_weights.append(result.x)
 #     frontier_x.append(result['fun'])
 # frontier_weights = np.array(frontier_weights)
-# 
+#
 # print("Plotting the findings...")
 # # Plot the findings on the E-V space
 # plt.figure(figsize=(10,8))
@@ -293,17 +293,17 @@ plt.show()
 # # Plot the random portfolios
 # plt.scatter(std_arr, ret_arr, c=sharpe_arr, cmap='RdYlGn')
 # plt.colorbar(label='Sharpe Ratio')
-# 
+#
 # # Plot the efficient frontier
 # plt.plot(frontier_x,frontier_y, 'r--', linewidth=3)
-# 
+#
 # # Show the 3 different portfolios
 # max_sharpe = plt.scatter(max_sr_std, max_sr_ret,marker = 's',s = 200,c='m')
 # opt_plot = plt.scatter(optimal_values[1], optimal_values[0],marker = 's',s=200,c='darkgreen')
 # min_sharpe = plt.scatter(min_sr_std, min_sr_ret,marker= 's',s=200,c='c')
 # naive_plt = plt.scatter(naive_values[1], naive_values[0],marker= 's',s=200,c='r')
-# 
-# 
+#
+#
 # plt.xlabel('Standard Deviation of Daily Portfolio Return')
 # plt.ylabel('Mean of Daily Portfolio Return')
 # plt.legend((max_sharpe,min_sharpe,naive_plt,opt_plot),
@@ -321,6 +321,3 @@ plt.show()
 #             bbox_inches='tight', pad_inches=0)
 # plt.show()
 # =============================================================================
-
-
-
